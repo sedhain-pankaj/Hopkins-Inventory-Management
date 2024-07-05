@@ -1,0 +1,8 @@
+# venv environment folder
+python_environment
+
+# python cache files
+__pycache__
+
+# MacOS 
+.DS_Store
