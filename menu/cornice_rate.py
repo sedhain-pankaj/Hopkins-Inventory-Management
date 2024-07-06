@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import csv
 from utils import create_button, clear_window
+from constants import FILEPATH
 
 
 # Opens the cornice rates page with the back and save button
@@ -33,7 +34,7 @@ def open_cornice_rates(window):
     )
     create_button(
         "💾",
-        lambda: save_to_csv(tree, "assets/cornice_rate.csv"),
+        lambda: save_to_csv(tree, FILEPATH),
         "nw",
         2,
         5,
@@ -51,7 +52,7 @@ def open_cornice_rates(window):
     tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # Open and read the CSV file
-    with open("assets/cornice_rate.csv", newline="") as csvfile:
+    with open(FILEPATH, newline="") as csvfile:
         csvreader = csv.reader(csvfile)
         headers = next(csvreader)  # Extract the first row as headers
 
