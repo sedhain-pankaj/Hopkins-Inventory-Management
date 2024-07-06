@@ -52,7 +52,7 @@ def open_cornice_rates(window):
     tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     # Open and read the CSV file
-    with open(FILEPATH, newline="") as csvfile:
+    with open(FILEPATH, newline="", encoding="utf-8") as csvfile:
         csvreader = csv.reader(csvfile)
         headers = next(csvreader)  # Extract the first row as headers
 
@@ -109,7 +109,7 @@ def save_edit(tree, item, column_index, new_value):
 
 # Save the Treeview data to a CSV file
 def save_to_csv(tree, filepath):
-    with open(filepath, "w", newline="") as csvfile:
+    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
         csvwriter = csv.writer(csvfile)
         # Write the headers
         csvwriter.writerow(tree["columns"])
