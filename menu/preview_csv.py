@@ -1,14 +1,13 @@
-# This file contains the code for the cornice and its per unit rate
+# This file contains the code to preview a CSV file.
 
 import tkinter as tk
 import tkinter.ttk as ttk
 import csv
 from utils import create_button, clear_window
-from constants import FILEPATH
 
 
 # Opens the cornice rates page with the back and save button
-def open_cornice_rates(window):
+def preview_csv(window, FILEPATH, enable_edit):
     clear_window(window)
 
     # Import inside the function to avoid circular import
@@ -44,6 +43,33 @@ def open_cornice_rates(window):
         button_frame,
         tk.RIGHT,
     )
+
+    # If enable_edit is True, allow adding and deleting rows
+    if enable_edit:
+        create_button(
+            "➕",
+            lambda: add_row_below_selected(tree),
+            "nw",
+            2,
+            5,
+            5,
+            10,
+            10,
+            button_frame,
+            tk.RIGHT,
+        )
+        create_button(
+            "🗑️",
+            lambda: delete_selected_row(tree),
+            "nw",
+            2,
+            5,
+            5,
+            10,
+            10,
+            button_frame,
+            tk.RIGHT,
+        )
 
     # Create and display the cornice rates table from a CSV file
     tree = ttk.Treeview(
@@ -116,3 +142,18 @@ def save_to_csv(tree, filepath):
         # Write the updated rows
         for item in tree.get_children():
             csvwriter.writerow(tree.item(item)["values"])
+
+
+def add_row_below_selected(tree):
+    selected = tree.selection()
+    if selected:
+        selected_index = tree.index(selected[0])
+        # Assuming you want to insert an empty row or predefined data
+        # Adjust the row data as per your requirements
+        tree.insert("", selected_index + 1, values=("New", "Row"))
+
+
+def delete_selected_row(tree):
+    selected = tree.selection()
+    if selected:
+        tree.delete(selected[0])

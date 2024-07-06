@@ -1,10 +1,10 @@
 # This file contains the functions to open the menu context and the back button to return to the root window
 
 from utils import create_button, clear_window
-from menu.overall_stock import open_overall_stock
+from menu.preview_csv import preview_csv
 from menu.todays_cornice_log import open_todays_cornice_log
 from menu.hours_worked import open_hours_worked
-from menu.cornice_rate import open_cornice_rates
+from constants import CORNICE_RATE_FILEPATH, OVERALL_STOCK_FILEPATH
 
 
 # Opens the menu context with the back button and menu buttons
@@ -16,10 +16,10 @@ def open_menu_context(window):
 
     # Dictionary containing the text and command for each button
     button_texts = {
-        "Overall Stock": lambda: open_overall_stock(window),
+        "Overall Stock": lambda: preview_csv(window, OVERALL_STOCK_FILEPATH, True),
         "Today's Cornice Log": lambda: open_todays_cornice_log(window),
         "Hours Worked": lambda: open_hours_worked(window),
-        "Cornice Rates": lambda: open_cornice_rates(window),
+        "Cornice Rates": lambda: preview_csv(window, CORNICE_RATE_FILEPATH, False),
     }
 
     # FOR loop to create and display the menu buttons
