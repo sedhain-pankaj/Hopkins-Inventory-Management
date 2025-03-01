@@ -7,6 +7,14 @@ def create_root_window():
     window = tk.Tk()
     window.title("Hopkins Plaster Studio - Inventory Management System")
     window.attributes("-fullscreen", True)
+
+    # Load and set the application icon
+    try:
+        logo = tk.PhotoImage(file="assets/HPS.png")
+        window.iconphoto(True, logo)
+    except Exception as e:
+        print(f"Could not load application icon: {e}")
+
     return window
 
 
