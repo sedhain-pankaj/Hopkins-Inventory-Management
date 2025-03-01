@@ -105,17 +105,49 @@ def preview_csv(window, FILEPATH, enable_edit):
         csvreader = csv.reader(csvfile)
         headers = next(csvreader)  # Extract the first row as headers
 
-        # Create unique column identifiers, so Tkinter isn't confused by duplicate header names
+        # Read all rows to determine column widths
+        rows = list(csvreader)
+
+        # Create unique column identifiers
         unique_ids = [f"col{i}" for i in range(len(headers))]
 
         # Configure the Treeview to display all columns using unique IDs
         tree["columns"] = unique_ids
-        for idx, col_id in enumerate(unique_ids):
-            tree.heading(col_id, text=headers[idx])
-            tree.column(col_id, anchor=tk.CENTER)
 
-        # Insert rows into the Treeview, including all columns
-        for row in csvreader:
+        # Calculate the appropriate width for each column
+        for idx, col_id in enumerate(unique_ids):
+            # Set column heading
+            tree.heading(col_id, text=headers[idx])
+
+            # Calculate width for header (headers are bold and larger)
+            header_width = (
+                len(str(headers[idx])) * 12
+            )  # Use higher multiplier for headers
+
+            # Check width needed for data in this column
+            data_width = 0
+            for row in rows:
+                if idx < len(row):
+                    width = len(str(row[idx])) * 10
+                    if width > data_width:
+                        data_width = width
+
+            # Take the larger of header width and data width
+            max_width = max(header_width, data_width)
+
+            # Add extra padding to ensure headers don't overlap
+            max_width += 20
+
+            # Set minimum width (don't let columns get too narrow)
+            max_width = max(max_width, 80)  # Increased minimum width
+            # Set maximum width (don't let columns get too wide)
+            max_width = min(max_width, 300)
+
+            # Set column width and alignment
+            tree.column(col_id, width=max_width, anchor=tk.CENTER, stretch=False)
+
+        # Insert rows into the Treeview
+        for row in rows:
             tree.insert("", "end", values=row)
 
     # Bind the double-click event to the Treeview
