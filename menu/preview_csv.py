@@ -77,12 +77,17 @@ def preview_csv(window, FILEPATH, enable_edit):
     style.configure("Treeview", rowheight=25, font=("Arial", 14))
     style.configure("Treeview.Heading", rowheight=25, font=("Arial", 16, "bold"))
 
-    # Create a frame to contain the Treeview and scrollbars
+    # Configure alternating row colors
+    style.map("Treeview", background=[("selected", "#1c75bc")])  # Keep selection color
     tree_frame = tk.Frame(window)
     tree_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     # Create the Treeview
     tree = ttk.Treeview(tree_frame, show="headings")
+
+    # Configure the tag colors for alternating rows
+    tree.tag_configure("odd", background="#f0f0f0")  # Light gray for odd rows
+    tree.tag_configure("even", background="#ffffff")  # White for even rows
 
     # Create vertical scrollbar
     vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
@@ -146,9 +151,10 @@ def preview_csv(window, FILEPATH, enable_edit):
             # Set column width and alignment
             tree.column(col_id, width=max_width, anchor=tk.CENTER, stretch=False)
 
-        # Insert rows into the Treeview
-        for row in rows:
-            tree.insert("", "end", values=row)
+        # Insert rows into the Treeview with alternating colors
+        for i, row in enumerate(rows):
+            tag = "even" if i % 2 == 0 else "odd"
+            tree.insert("", "end", values=row, tags=(tag,))
 
     # Bind the double-click event to the Treeview
     tree.bind("<Double-1>", lambda event: update_cell(event, tree))
