@@ -86,21 +86,15 @@ def preview_csv(window, FILEPATH, enable_edit):
     # Open and read the CSV file
     with open(FILEPATH, newline="", encoding="utf-8") as csvfile:
         csvreader = csv.reader(csvfile)
-        file_headers = next(csvreader)  # Extract the first row as headers
-
-        # Replace empty headers at odd indices with "Unit"
-        display_headers = [
-            header if header.strip() or i % 2 == 0 else "Unit"
-            for i, header in enumerate(file_headers)
-        ]
+        headers = next(csvreader)  # Extract the first row as headers
 
         # Create unique column identifiers, so Tkinter isn't confused by duplicate header names
-        unique_ids = [f"col{i}" for i in range(len(display_headers))]
+        unique_ids = [f"col{i}" for i in range(len(headers))]
 
         # Configure the Treeview to display all columns using unique IDs
         tree["columns"] = unique_ids
         for idx, col_id in enumerate(unique_ids):
-            tree.heading(col_id, text=display_headers[idx])
+            tree.heading(col_id, text=headers[idx])
             tree.column(col_id, anchor=tk.CENTER)
 
         # Insert rows into the Treeview, including all columns
@@ -152,8 +146,9 @@ def save_edit(tree, item, column_index, new_value):
 def save_to_csv(tree, filepath):
     with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
         csvwriter = csv.writer(csvfile)
-        # Write the headers
-        csvwriter.writerow(tree["columns"])
+        # Retrieve the display headers from each column's heading
+        headers = [tree.heading(col)["text"] for col in tree["columns"]]
+        csvwriter.writerow(headers)
         # Write the updated rows
         for item in tree.get_children():
             csvwriter.writerow(tree.item(item)["values"])
