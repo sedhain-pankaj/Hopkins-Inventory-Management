@@ -71,6 +71,12 @@ def preview_csv(window, FILEPATH, enable_edit):
             tk.RIGHT,
         )
 
+        # Create and style the cornice rates tables from a CSV file
+    style = ttk.Style()
+    style.theme_use("clam")  # Set the style to "clam" for a cleaner look
+    style.configure("Treeview", rowheight=25, font=("Arial", 14))
+    style.configure("Treeview.Heading", rowheight=25, font=("Arial", 16, "bold"))
+
     # Create and display the cornice rates table from a CSV file
     tree = ttk.Treeview(
         window, show="headings"
@@ -80,13 +86,22 @@ def preview_csv(window, FILEPATH, enable_edit):
     # Open and read the CSV file
     with open(FILEPATH, newline="", encoding="utf-8") as csvfile:
         csvreader = csv.reader(csvfile)
-        headers = next(csvreader)  # Extract the first row as headers
+        file_headers = next(csvreader)  # Extract the first row as headers
 
-        # Configure the Treeview to display all columns
-        tree["columns"] = headers
-        for col in headers:
-            tree.heading(col, text=col)
-            tree.column(col, anchor=tk.CENTER)
+        # Replace empty headers at odd indices with "Unit"
+        display_headers = [
+            header if header.strip() or i % 2 == 0 else "Unit"
+            for i, header in enumerate(file_headers)
+        ]
+
+        # Create unique column identifiers, so Tkinter isn't confused by duplicate header names
+        unique_ids = [f"col{i}" for i in range(len(display_headers))]
+
+        # Configure the Treeview to display all columns using unique IDs
+        tree["columns"] = unique_ids
+        for idx, col_id in enumerate(unique_ids):
+            tree.heading(col_id, text=display_headers[idx])
+            tree.column(col_id, anchor=tk.CENTER)
 
         # Insert rows into the Treeview, including all columns
         for row in csvreader:
