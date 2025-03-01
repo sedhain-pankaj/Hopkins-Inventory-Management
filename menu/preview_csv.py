@@ -2,6 +2,7 @@
 
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import messagebox
 import csv
 from utils import create_button, clear_window
 
@@ -207,6 +208,9 @@ def save_to_csv(tree, filepath):
         # Write the updated rows
         for item in tree.get_children():
             csvwriter.writerow(tree.item(item)["values"])
+
+    # Display success message
+    messagebox.showinfo("Success", "Data saved successfully!")
 
 
 def add_row_below_selected(tree):
