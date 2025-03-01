@@ -77,11 +77,28 @@ def preview_csv(window, FILEPATH, enable_edit):
     style.configure("Treeview", rowheight=25, font=("Arial", 14))
     style.configure("Treeview.Heading", rowheight=25, font=("Arial", 16, "bold"))
 
-    # Create and display the cornice rates table from a CSV file
-    tree = ttk.Treeview(
-        window, show="headings"
-    )  # Set show to "headings" to remove the extra empty column
-    tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    # Create a frame to contain the Treeview and scrollbars
+    tree_frame = tk.Frame(window)
+    tree_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # Create the Treeview
+    tree = ttk.Treeview(tree_frame, show="headings")
+
+    # Create vertical scrollbar
+    vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    vsb.grid(row=0, column=1, sticky="ns")
+
+    # Create horizontal scrollbar
+    hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
+    hsb.grid(row=1, column=0, sticky="ew")
+
+    # Configure the Treeview to use scrollbars
+    tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+    tree.grid(row=0, column=0, sticky="nsew")
+
+    # Configure the grid weights to allow the Treeview to expand
+    tree_frame.grid_rowconfigure(0, weight=1)
+    tree_frame.grid_columnconfigure(0, weight=1)
 
     # Open and read the CSV file
     with open(FILEPATH, newline="", encoding="utf-8") as csvfile:
