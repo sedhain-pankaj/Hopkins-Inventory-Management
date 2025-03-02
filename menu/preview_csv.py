@@ -3,8 +3,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
-import csv
+import csv, hashlib
 from utils import create_button, clear_window
+from constants import PASSWORD_HASH
 
 
 # Opens the cornice rates page with the back and save button
@@ -200,17 +201,65 @@ def save_edit(tree, item, column_index, new_value):
 
 # Save the Treeview data to a CSV file
 def save_to_csv(tree, filepath):
-    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
-        csvwriter = csv.writer(csvfile)
-        # Retrieve the display headers from each column's heading
-        headers = [tree.heading(col)["text"] for col in tree["columns"]]
-        csvwriter.writerow(headers)
-        # Write the updated rows
-        for item in tree.get_children():
-            csvwriter.writerow(tree.item(item)["values"])
+    # Create a password dialog
+    password_dialog = tk.Toplevel()
+    password_dialog.title("Password Required")
+    password_dialog.geometry("300x150")
+    password_dialog.resizable(False, False)
 
-    # Display success message
-    messagebox.showinfo("Success", "Data saved successfully!")
+    # Center the dialog
+    password_dialog.geometry(
+        "+{}+{}".format(
+            int(password_dialog.winfo_screenwidth() / 2 - 150),
+            int(password_dialog.winfo_screenheight() / 2 - 75),
+        )
+    )
+
+    # Add password label and entry
+    tk.Label(
+        password_dialog, text="Please enter password to save:", font=("Arial", 12)
+    ).pack(pady=10)
+    password_entry = tk.Entry(password_dialog, show="*", width=20, font=("Arial", 12))
+    password_entry.pack(pady=10)
+    password_entry.focus()
+
+    def verify_password():
+        entered_password = password_entry.get()
+        # Hash the entered password
+        hashed_input = hashlib.sha256(entered_password.encode()).hexdigest()
+
+        # Compare with stored hash
+        if hashed_input == PASSWORD_HASH:
+            password_dialog.destroy()
+            # Password correct, proceed with saving
+            with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+                csvwriter = csv.writer(csvfile)
+                headers = [tree.heading(col)["text"] for col in tree["columns"]]
+                csvwriter.writerow(headers)
+                for item in tree.get_children():
+                    csvwriter.writerow(tree.item(item)["values"])
+            messagebox.showinfo("Success", "Data saved successfully!")
+        else:
+            messagebox.showerror("Error", "Incorrect password")
+
+    # Add buttons
+    button_frame = tk.Frame(password_dialog)
+    button_frame.pack(fill=tk.X, pady=10)
+
+    tk.Button(button_frame, text="Cancel", command=password_dialog.destroy).pack(
+        side=tk.LEFT, padx=20
+    )
+    tk.Button(button_frame, text="Submit", command=verify_password).pack(
+        side=tk.RIGHT, padx=20
+    )
+
+    # Bind Enter key to verify password
+    password_entry.bind("<Return>", lambda event: verify_password())
+
+    # Make dialog modal
+    password_dialog.transient(tree.winfo_toplevel())
+    password_dialog.grab_set()
+    tree.winfo_toplevel().wait_window(password_dialog)
 
 
 def add_row_below_selected(tree):
