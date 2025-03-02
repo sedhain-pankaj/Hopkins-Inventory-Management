@@ -3,9 +3,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
-import csv, hashlib
-from utils import create_button, clear_window
-from constants import PASSWORD_HASH
+import csv
+from Utilities.utils import create_button, clear_window, adjust_column_widths
+from Utilities.password_verification import verify_password_dialog
 
 
 # Opens the cornice rates page with the back and save button
@@ -121,37 +121,12 @@ def preview_csv(window, FILEPATH, enable_edit):
         # Configure the Treeview to display all columns using unique IDs
         tree["columns"] = unique_ids
 
-        # Calculate the appropriate width for each column
+        # Set column headings
         for idx, col_id in enumerate(unique_ids):
-            # Set column heading
             tree.heading(col_id, text=headers[idx])
 
-            # Calculate width for header (headers are bold and larger)
-            header_width = (
-                len(str(headers[idx])) * 12
-            )  # Use higher multiplier for headers
-
-            # Check width needed for data in this column
-            data_width = 0
-            for row in rows:
-                if idx < len(row):
-                    width = len(str(row[idx])) * 10
-                    if width > data_width:
-                        data_width = width
-
-            # Take the larger of header width and data width
-            max_width = max(header_width, data_width)
-
-            # Add extra padding to ensure headers don't overlap
-            max_width += 20
-
-            # Set minimum width (don't let columns get too narrow)
-            max_width = max(max_width, 80)  # Increased minimum width
-            # Set maximum width (don't let columns get too wide)
-            max_width = min(max_width, 300)
-
-            # Set column width and alignment
-            tree.column(col_id, width=max_width, anchor=tk.CENTER, stretch=False)
+        # Use the utility function to adjust all column widths
+        adjust_column_widths(tree)
 
         # Insert rows into the Treeview with alternating colors
         for i, row in enumerate(rows):
@@ -201,77 +176,55 @@ def save_edit(tree, item, column_index, new_value):
 
 # Save the Treeview data to a CSV file
 def save_to_csv(tree, filepath):
-    # Create a password dialog
-    password_dialog = tk.Toplevel()
-    password_dialog.title("Password Required")
-    password_dialog.geometry("300x150")
-    password_dialog.resizable(False, False)
+    def save_data():
+        # This function will be called if password verification succeeds
+        with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            headers = [tree.heading(col)["text"] for col in tree["columns"]]
+            csvwriter.writerow(headers)
+            for item in tree.get_children():
+                csvwriter.writerow(tree.item(item)["values"])
+        messagebox.showinfo("Success", "Data saved successfully!")
 
-    # Center the dialog
-    password_dialog.geometry(
-        "+{}+{}".format(
-            int(password_dialog.winfo_screenwidth() / 2 - 150),
-            int(password_dialog.winfo_screenheight() / 2 - 75),
-        )
-    )
-
-    # Add password label and entry
-    tk.Label(
-        password_dialog, text="Please enter password to save:", font=("Arial", 12)
-    ).pack(pady=10)
-    password_entry = tk.Entry(password_dialog, show="*", width=20, font=("Arial", 12))
-    password_entry.pack(pady=10)
-    password_entry.focus()
-
-    def verify_password():
-        entered_password = password_entry.get()
-        # Hash the entered password
-        hashed_input = hashlib.sha256(entered_password.encode()).hexdigest()
-
-        # Compare with stored hash
-        if hashed_input == PASSWORD_HASH:
-            password_dialog.destroy()
-            # Password correct, proceed with saving
-            with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
-                csvwriter = csv.writer(csvfile)
-                headers = [tree.heading(col)["text"] for col in tree["columns"]]
-                csvwriter.writerow(headers)
-                for item in tree.get_children():
-                    csvwriter.writerow(tree.item(item)["values"])
-            messagebox.showinfo("Success", "Data saved successfully!")
-        else:
-            messagebox.showerror("Error", "Incorrect password")
-
-    # Add buttons
-    button_frame = tk.Frame(password_dialog)
-    button_frame.pack(fill=tk.X, pady=10)
-
-    tk.Button(button_frame, text="Cancel", command=password_dialog.destroy).pack(
-        side=tk.LEFT, padx=20
-    )
-    tk.Button(button_frame, text="Submit", command=verify_password).pack(
-        side=tk.RIGHT, padx=20
-    )
-
-    # Bind Enter key to verify password
-    password_entry.bind("<Return>", lambda event: verify_password())
-
-    # Make dialog modal
-    password_dialog.transient(tree.winfo_toplevel())
-    password_dialog.grab_set()
-    tree.winfo_toplevel().wait_window(password_dialog)
+    # Use the utility function to verify password before saving
+    verify_password_dialog(tree.winfo_toplevel(), save_data)
 
 
 def add_row_below_selected(tree):
     selected = tree.selection()
+
+    # Get all column headers
+    headers = [tree.heading(col)["text"] for col in tree["columns"]]
+
+    # Create a new row with "New" prepended to each header
+    new_row = [f"New {header}" for header in headers]
+
     if selected:
         selected_index = tree.index(selected[0])
-        # Assuming you want to insert an empty row or predefined data
-        # Adjust the row data as per your requirements
-        tree.insert("", selected_index + 1, values=("New", "Row"))
+
+        # Insert the new row below the selected one
+        tree.insert(
+            "",
+            selected_index + 1,
+            values=new_row,
+            tags=("even" if (selected_index + 1) % 2 == 0 else "odd"),
+        )
+    else:
+        # If no row is selected, add to the end
+        count = len(tree.get_children())
+        tree.insert(
+            "", "end", values=new_row, tags=("even" if count % 2 == 0 else "odd")
+        )
+
+    # After adding the row, adjust column widths
+    adjust_column_widths(tree)
 
 
 def delete_selected_row(tree):
     selected = tree.selection()
     if selected:
         tree.delete(selected[0])
+        # After deleting the row, adjust column widths
+        adjust_column_widths(tree)
+    else:
+        messagebox.showerror("Error", "No row selected for deletion")
