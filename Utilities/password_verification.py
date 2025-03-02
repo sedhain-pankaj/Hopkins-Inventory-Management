@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import hashlib
-from Utilities.constants import PASSWORD_HASH
+from utilities.constants import PASSWORD_HASH
 
 
 def verify_password_dialog(parent, callback_on_success):

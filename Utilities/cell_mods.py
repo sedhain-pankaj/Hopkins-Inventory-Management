@@ -1,7 +1,7 @@
 import tkinter as tk, csv
 from tkinter import messagebox
-from Utilities.utils import adjust_column_widths
-from Utilities.password_verification import verify_password_dialog
+from utilities.utils import adjust_column_widths
+from utilities.password_verification import verify_password_dialog
 
 
 # Update the cell value when double-clicked

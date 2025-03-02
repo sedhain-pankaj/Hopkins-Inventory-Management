@@ -1,13 +1,13 @@
 # This file contains the code to preview a CSV file.
 
 import tkinter as tk, tkinter.ttk as ttk, csv
-from Utilities.cell_mods import (
+from utilities.cell_mods import (
     update_cell,
     save_to_csv,
     add_row_below_selected,
     delete_selected_row,
 )
-from Utilities.utils import create_button, clear_window, adjust_column_widths
+from utilities.utils import create_button, clear_window, adjust_column_widths
 
 
 # Opens the cornice rates page with the back and save button

@@ -1,10 +1,10 @@
 # This file contains the functions to open the menu context and the back button to return to the root window
 
-from Utilities.utils import create_button, clear_window
+from utilities.utils import create_button, clear_window
 from pages.preview_csv import preview_csv
 from pages.todays_cornice_log import open_todays_cornice_log
 from pages.hours_worked import open_hours_worked
-from Utilities.constants import CORNICE_RATE_FILEPATH, OVERALL_STOCK_FILEPATH
+from utilities.constants import CORNICE_RATE_FILEPATH, OVERALL_STOCK_FILEPATH
 
 
 # Opens the menu context with the back button and menu buttons
