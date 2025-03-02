@@ -7,7 +7,9 @@ from utilities.cell_mods import (
     add_row_below_selected,
     delete_selected_row,
 )
-from utilities.utils import create_button, clear_window, adjust_column_widths
+from utilities.utils import create_button, clear_window
+from utilities.column_width import adjust_column_widths
+from utilities.undo_history import undo_last_action, clear_history, save_table_state
 
 
 # Opens the cornice rates page with the back and save button
@@ -35,9 +37,23 @@ def preview_csv(window, FILEPATH, enable_edit):
         button_frame,
         tk.LEFT,
     )
+
     create_button(
         "💾",
         lambda: save_to_csv(tree, FILEPATH),
+        "nw",
+        2,
+        5,
+        5,
+        10,
+        10,
+        button_frame,
+        tk.RIGHT,
+    )
+
+    create_button(
+        "↩",
+        lambda: undo_last_action(tree),
         "nw",
         2,
         5,
@@ -62,6 +78,7 @@ def preview_csv(window, FILEPATH, enable_edit):
             button_frame,
             tk.RIGHT,
         )
+
         create_button(
             "🗑️",
             lambda: delete_selected_row(tree),
@@ -88,6 +105,9 @@ def preview_csv(window, FILEPATH, enable_edit):
 
     # Create the Treeview
     tree = ttk.Treeview(tree_frame, show="headings")
+
+    # Clear any previous history_stack variable when loading a new file
+    clear_history()
 
     # Configure the tag colors for alternating rows
     tree.tag_configure("odd", background="#f0f0f0")  # Light gray for odd rows
@@ -134,6 +154,9 @@ def preview_csv(window, FILEPATH, enable_edit):
         for i, row in enumerate(rows):
             tag = "even" if i % 2 == 0 else "odd"
             tree.insert("", "end", values=row, tags=(tag,))
+
+        # After all rows are inserted, save the initial state
+        save_table_state(tree)
 
     # Bind the double-click event to the Treeview
     tree.bind("<Double-1>", lambda event: update_cell(event, tree))

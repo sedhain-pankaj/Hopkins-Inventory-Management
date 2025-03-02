@@ -1,7 +1,8 @@
 import tkinter as tk, csv
 from tkinter import messagebox
-from utilities.utils import adjust_column_widths
+from utilities.column_width import adjust_column_widths
 from utilities.password_verification import verify_password_dialog
+from utilities.undo_history import save_table_state
 
 
 # Update the cell value when double-clicked
@@ -31,6 +32,9 @@ def update_cell(event, tree):
             "<FocusOut>", lambda e: save_edit(tree, item, column_index, entry.get())
         )
 
+    # Save state after modification
+    save_table_state(tree)
+
 
 # Update the Treeview item with the new value and remove the entry widget
 def save_edit(tree, item, column_index, new_value):
@@ -39,6 +43,9 @@ def save_edit(tree, item, column_index, new_value):
     tree.item(item, values=values)
     for widget in tree.place_slaves():
         widget.destroy()  # Remove the entry widget
+
+    # Save state after modification
+    save_table_state(tree)
 
 
 # Save the Treeview data to a CSV file
@@ -84,8 +91,9 @@ def add_row_below_selected(tree):
             "", "end", values=new_row, tags=("even" if count % 2 == 0 else "odd")
         )
 
-    # After adding the row, adjust column widths
+    # After adding the row, adjust column widths and save state
     adjust_column_widths(tree)
+    save_table_state(tree)
 
 
 # Delete the selected row
@@ -93,7 +101,8 @@ def delete_selected_row(tree):
     selected = tree.selection()
     if selected:
         tree.delete(selected[0])
-        # After deleting the row, adjust column widths
+        # After deleting the row, adjust column widths and save state
         adjust_column_widths(tree)
+        save_table_state(tree)
     else:
         messagebox.showerror("Error", "No row selected for deletion")
