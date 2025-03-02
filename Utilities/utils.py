@@ -1,5 +1,5 @@
 import tkinter as tk
-from constants import FONT_SIZE
+from Utilities.constants import FONT_SIZE
 
 
 # Creates a button with specified parameters

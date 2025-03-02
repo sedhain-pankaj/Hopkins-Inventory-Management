@@ -1,5 +1,5 @@
 import tkinter as tk
-from date_time import root_window_components
+from pages.date_time import root_window_components
 
 
 # Creates the root window using tkinter
