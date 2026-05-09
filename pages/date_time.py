@@ -1,7 +1,7 @@
 import tkinter as tk
 import datetime
-from utilities.constants import FONT_SIZE, TIME_DELAY
-from utilities.utils import create_button
+from Utilities.constants import FONT_SIZE, TIME_DELAY
+from Utilities.utils import create_button
 from pages.main_menu import open_menu_context
 
 time_label = None  # Global variable to store the time label
