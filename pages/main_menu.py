@@ -4,6 +4,7 @@ from Utilities.utils import create_button, clear_window
 from pages.preview_csv import preview_csv
 from pages.todays_cornice_log import open_todays_cornice_log
 from pages.hours_worked import open_hours_worked
+from pages.clock_in_out import open_clock_in_out
 from Utilities.constants import CORNICE_RATE_FILEPATH, OVERALL_STOCK_FILEPATH
 
 
@@ -16,6 +17,7 @@ def open_menu_context(window):
 
     # Dictionary containing the text and command for each button
     button_texts = {
+        "Clock In / Out": lambda: open_clock_in_out(window),
         "Overall Stock": lambda: preview_csv(window, OVERALL_STOCK_FILEPATH, True),
         "Today's Cornice Log": lambda: open_todays_cornice_log(window),
         "Hours Worked": lambda: open_hours_worked(window),
