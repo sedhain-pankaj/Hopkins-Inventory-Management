@@ -6,3 +6,7 @@ __pycache__
 
 # MacOS 
 .DS_Store
+
+# Local employee data and biometric templates
+data/*
+!data/.gitkeep
