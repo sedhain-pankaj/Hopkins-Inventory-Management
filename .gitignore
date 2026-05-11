@@ -10,3 +10,7 @@ __pycache__
 # Local employee data and biometric templates
 data/*
 !data/.gitkeep
+
+#rust target
+target/
+src-tauri/gen/schemas/

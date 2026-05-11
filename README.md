@@ -74,6 +74,27 @@ fingerprint scan automatically, identifies the employee, and writes the event
 to `data/time_clock_log.csv`. The **Hours Worked** page summarizes today's
 clocked time from that log.
 
+## Tauri Kiosk App
+
+A Rust/Tauri kiosk rewrite now lives in `src-tauri/` with a static bundled UI in
+`ui/`. Build the distributable binary with:
+
+```bash
+cargo build --release --manifest-path src-tauri/Cargo.toml
+```
+
+The release binary is written to `src-tauri/target/release/hopkins-kiosk`. The
+frontend, seeded cornice rates, seeded stock data, embedded SQLite engine, and
+the currently built CS9711 helper/libfprint artifacts are compiled into the app.
+On first run the app creates its own SQLite database in the OS application data
+directory and extracts the fingerprint helper there when scanning is used.
+
+Fingerprint scanning still needs permission to open the WA28 USB device. If the
+reader works only with `sudo`, the final kiosk machine needs a one-time device
+permission setup, such as a udev rule or a kiosk session that grants the app user
+access to the device. Bundling the helper solves the code dependency, but it
+cannot override Linux USB device permissions from inside an unprivileged app.
+
 ## Project Structure
 
 ```
