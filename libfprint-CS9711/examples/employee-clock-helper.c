@@ -298,6 +298,9 @@ load_print_file (const char *storage_dir,
       return FALSE;
     }
 
+  fp_print_set_username (print, employee_id);
+  fp_print_set_description (print, employee_id);
+
   record = g_new0 (PrintRecord, 1);
   record->employee_id = g_steal_pointer (&employee_id);
   record->print = print;
@@ -330,14 +333,23 @@ static PrintRecord *
 find_record_for_match (GPtrArray *records,
                        FpPrint   *match)
 {
+  const char *match_id;
+
   if (!match)
     return NULL;
+
+  match_id = fp_print_get_description (match);
+  if (!match_id || !*match_id)
+    match_id = fp_print_get_username (match);
 
   for (guint i = 0; i < records->len; i++)
     {
       PrintRecord *record = g_ptr_array_index (records, i);
 
-      if (record->print == match || fp_print_equal (record->print, match))
+      if (record->print == match)
+        return record;
+
+      if (match_id && g_strcmp0 (record->employee_id, match_id) == 0)
         return record;
     }
 
