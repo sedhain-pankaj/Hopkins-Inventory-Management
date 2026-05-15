@@ -19,6 +19,11 @@ pub fn run() {
                 let _ = window.set_decorations(false);
                 let _ = window.set_always_on_top(true);
                 let _ = window.set_focus();
+                // Open the devtools on startup to aid debugging (only in dev builds).
+                #[cfg(debug_assertions)]
+                {
+                    let _ = window.open_devtools();
+                }
             }
 
             Ok(())

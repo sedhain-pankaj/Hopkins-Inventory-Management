@@ -1,4 +1,5 @@
-const tauriInvoke = window.__TAURI__?.core?.invoke;
+const tauriCore = typeof window !== "undefined" && window.__TAURI__ && window.__TAURI__.core;
+const tauriInvoke = tauriCore ? tauriCore.invoke : null;
 
 export async function invoke(command, args = {}) {
   if (!tauriInvoke) {
@@ -8,7 +9,8 @@ export async function invoke(command, args = {}) {
 }
 
 export function escapeHtml(value) {
-  return String(value ?? "")
+  const safeValue = value === null || value === undefined ? "" : value;
+  return String(safeValue)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")

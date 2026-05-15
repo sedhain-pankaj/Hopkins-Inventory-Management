@@ -32,9 +32,6 @@ const permissionLabels = {
   daily_production_all: "All production",
 };
 
-lockKioskKeys();
-loadStatus();
-renderHome();
 
 async function loadStatus() {
   try {
@@ -98,6 +95,10 @@ function tickClock() {
   update();
   clockTimer = setInterval(update, 1000);
 }
+
+lockKioskKeys();
+loadStatus();
+renderHome();
 
 function renderRoleMenu() {
   if (clockTimer) clearInterval(clockTimer);

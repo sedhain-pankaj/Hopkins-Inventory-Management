@@ -39,7 +39,7 @@ export function requestAuth({ title, requireAdmin = false, employee = null }) {
     const fingerprintButton = modalRoot.querySelector("[data-fingerprint]");
 
     const fail = (error) => {
-      message.textContent = error?.message || String(error);
+      message.textContent = (error && error.message) || String(error);
       message.classList.add("error");
     };
 
@@ -54,7 +54,7 @@ export function requestAuth({ title, requireAdmin = false, employee = null }) {
       message.classList.remove("error");
       try {
         const response = await invoke("authenticate_password", {
-          employeeId: employee?.id ?? null,
+          employeeId: employee && employee.id ? employee.id : null,
           password: passwordInput.value,
           requireAdmin,
         });

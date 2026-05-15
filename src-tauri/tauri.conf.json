@@ -6,6 +6,7 @@
     "frontendDist": "../ui"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "label": "main",
@@ -20,7 +21,7 @@
         "closable": false,
         "alwaysOnTop": true,
         "skipTaskbar": true,
-        "devtools": false,
+        "devtools": true,
         "zoomHotkeysEnabled": false,
         "backgroundColor": "#171717"
       }
