@@ -15,10 +15,10 @@ pub fn run() {
             app.manage(state);
 
             if let Some(window) = app.get_webview_window("main") {
-                let _ = window.set_fullscreen(true);
-                let _ = window.set_decorations(false);
-                let _ = window.set_always_on_top(true);
-                let _ = window.set_focus();
+                // let _ = window.set_fullscreen(true);
+                // let _ = window.set_decorations(false);
+                // let _ = window.set_always_on_top(true);
+                // let _ = window.set_focus();
                 // Open the devtools on startup to aid debugging (only in dev builds).
                 #[cfg(debug_assertions)]
                 {
@@ -71,12 +71,12 @@ pub fn run() {
             event: WindowEvent::Focused(false),
             ..
         } => {
-            if let Some(window) = app_handle.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.unminimize();
-                let _ = window.set_fullscreen(true);
-                let _ = window.set_always_on_top(true);
-                let _ = window.set_focus();
+            if let Some(_window) = app_handle.get_webview_window("main") {
+                // let _ = window.show();
+                // let _ = window.unminimize();
+                // let _ = window.set_fullscreen(true);
+                // let _ = window.set_always_on_top(true);
+                // let _ = window.set_focus();
             }
         }
         _ => {}
