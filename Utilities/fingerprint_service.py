@@ -70,6 +70,7 @@ def ensure_data_files():
 def build_helper_hint():
     return (
         "Build the CS9711 helper first:\n"
+        "  cd ../rust-hps-inventory\n"
         "  meson setup libfprint-CS9711/build libfprint-CS9711 "
         "-Ddrivers=cs9711 -Ddoc=false -Dgtk-examples=false "
         "-Dintrospection=false -Dinstalled-tests=false "
@@ -136,10 +137,14 @@ def find_helper_binary():
     if configured and os.path.exists(configured) and os.access(configured, os.X_OK):
         return configured
 
+    rust_project_dir = os.path.abspath(os.path.join(BASE_DIR, "..", "rust-hps-inventory"))
     candidates = [
         os.path.join(BASE_DIR, "libfprint-CS9711", "build", "examples", "employee-clock-helper"),
         os.path.join(BASE_DIR, "libfprint-CS9711", "builddir", "examples", "employee-clock-helper"),
         os.path.join(BASE_DIR, "libfprint-CS9711", "_build", "examples", "employee-clock-helper"),
+        os.path.join(rust_project_dir, "libfprint-CS9711", "build", "examples", "employee-clock-helper"),
+        os.path.join(rust_project_dir, "libfprint-CS9711", "builddir", "examples", "employee-clock-helper"),
+        os.path.join(rust_project_dir, "libfprint-CS9711", "_build", "examples", "employee-clock-helper"),
     ]
     for candidate in candidates:
         if os.path.exists(candidate) and os.access(candidate, os.X_OK):

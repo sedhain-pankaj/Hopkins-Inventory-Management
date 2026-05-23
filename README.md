@@ -49,13 +49,15 @@ A comprehensive **inventory management solution** for Hopkins Plaster Studio, bu
 ## Fingerprint Clock Setup
 
 The WA28 reader appears as `2541:0236` and is supported by the bundled
-`libfprint-CS9711` fork. The clock system stores app-local templates in
-`data/fingerprints/`; it does not enroll fingerprints for Linux login.
+`../rust-hps-inventory/libfprint-CS9711` fork after the Rust split. The clock
+system stores app-local templates in `data/fingerprints/`; it does not enroll
+fingerprints for Linux login.
 
 Build the helper once:
 
 ```bash
 sudo apt install meson ninja-build pkg-config libglib2.0-dev libgusb-dev libopencv-dev doctest-dev
+cd ../rust-hps-inventory
 meson setup libfprint-CS9711/build libfprint-CS9711 -Ddrivers=cs9711 -Ddoc=false -Dgtk-examples=false -Dintrospection=false -Dinstalled-tests=false -Dudev_rules=disabled -Dudev_hwdb=disabled
 ninja -C libfprint-CS9711/build examples/employee-clock-helper
 ```
@@ -74,26 +76,10 @@ fingerprint scan automatically, identifies the employee, and writes the event
 to `data/time_clock_log.csv`. The **Hours Worked** page summarizes today's
 clocked time from that log.
 
-## Tauri Kiosk App
+## Rust/Tauri Kiosk App
 
-A Rust/Tauri kiosk rewrite now lives in `src-tauri/` with a static bundled UI in
-`ui/`. Build the distributable binary with:
-
-```bash
-cargo build --release --manifest-path src-tauri/Cargo.toml
-```
-
-The release binary is written to `src-tauri/target/release/hopkins-kiosk`. The
-frontend, seeded cornice rates, seeded stock data, embedded SQLite engine, and
-the currently built CS9711 helper/libfprint artifacts are compiled into the app.
-On first run the app creates its own SQLite database in the OS application data
-directory and extracts the fingerprint helper there when scanning is used.
-
-Fingerprint scanning still needs permission to open the WA28 USB device. If the
-reader works only with `sudo`, the final kiosk machine needs a one-time device
-permission setup, such as a udev rule or a kiosk session that grants the app user
-access to the device. Bundling the helper solves the code dependency, but it
-cannot override Linux USB device permissions from inside an unprivileged app.
+The Rust/Tauri kiosk rewrite now lives beside this Python legacy app at
+`../rust-hps-inventory`.
 
 ## Project Structure
 
